@@ -23,6 +23,28 @@ This README helps you find the right documentation quickly without reading every
 
 ---
 
+## Which API Should I Use?
+
+Roam has multiple APIs for different use cases. Use this decision guide:
+
+**Use `Roam Alpha API`** (client-side) if:
+- You're building a Roam Depot extension
+- You're writing `roam/js` scripts for personal use
+- You need to run code inside the Roam browser app
+
+**Use `Roam Backend API (Beta)`** (server-side) if:
+- You need both read AND write operations
+- You're building a server-side integration
+- You do NOT need to support encrypted graphs (Backend API cannot access encrypted graphs)
+
+**Use `Roam Append API`** (server-side) if:
+- You need to support BOTH encrypted AND unencrypted graphs
+- You only need to add/append data (no reads or edits)
+- You want a simple API optimized for capture workflows
+- You're building automations (Zapier, Raycast, Slack bots, etc.)
+
+---
+
 ## Documentation by Category
 
 ### 1. Client-Side APIs (Browser)
@@ -184,6 +206,17 @@ For context-window planning:
 ### "I want to integrate Roam with an external service"
 1. For append-only operations: `Docs - Roam Append API.md`
 2. For full read/write: `Docs - Roam Backend API (Beta).md`
+
+---
+
+## Recommended Reading Order (New to Roam APIs)
+
+If you're unfamiliar with Roam's APIs, follow this sequence within any API doc:
+
+1. **First**, confirm it's the right API using the "Which API Should I Use?" section above
+2. **Then** read the Description/Overview section of that API doc
+3. **Then** go through "Getting Started" for a minimal working example
+4. **Finally**, reference the Examples or API Reference sections as needed
 
 ---
 
