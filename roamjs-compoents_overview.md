@@ -2,9 +2,53 @@
 
 This document provides a comprehensive overview of the modules and components available in the RoamJS Components library, a collection of utilities and React components for developing extensions for Roam Research.
 
+**Version:** 0.85.7
+**License:** MIT
+**Repository:** https://github.com/RoamJS/roamjs-components
+
+## Overview
+
+The RoamJS Components library is an expansive toolset containing:
+- **20+ React Components** for UI development
+- **15+ Configuration Panel Components** for settings pages
+- **50+ Database Query Functions** for data retrieval
+- **35+ DOM Manipulation Utilities** for UI interaction
+- **45+ Utility Functions** for common tasks
+- **10+ Write Operations** for data modification
+- **Custom Hooks** for React development
+- **Testing Utilities** for extension testing
+- **Markdown Parser** with Roam-specific syntax support
+
+## Import Pattern
+
+The library uses **direct file imports** to prevent import bloat. Always import from specific module files:
+
+```typescript
+// ✓ Correct - individual file imports
+import AutocompleteInput from "roamjs-components/components/AutocompleteInput"
+import getTextByBlockUid from "roamjs-components/queries/getTextByBlockUid"
+import createBlock from "roamjs-components/writes/createBlock"
+import runExtension from "roamjs-components/util/runExtension"
+
+// ✗ Incorrect - barrel imports will throw errors
+import { AutocompleteInput } from "roamjs-components/components"
+import { getTextByBlockUid } from "roamjs-components/queries"
+```
+
 ## Components (`src/components`)
 
 This directory contains reusable React components designed to integrate seamlessly with the Roam Research UI.
+
+**Important:** Components must be imported individually from their specific files, not from the components directory. The library uses direct file imports to prevent import bloat:
+
+```typescript
+// ✓ Correct
+import AutocompleteInput from "roamjs-components/components/AutocompleteInput"
+import FormDialog from "roamjs-components/components/FormDialog"
+
+// ✗ Incorrect - will throw an error
+import { AutocompleteInput, FormDialog } from "roamjs-components/components"
+```
 
 ### AutocompleteInput.tsx
 Implements a generic autocomplete input field. It is highly customizable, supporting various options, multiline input, and fuzzy search for filtering. The component manages its own state, handles keyboard navigation, and displays a popover menu with selectable options, including support for creating new items.
@@ -28,7 +72,7 @@ Implements a popover menu that appears at the cursor's position within a textare
 Renders a small info icon that displays a descriptive tooltip on hover. This component is used to annotate UI elements with additional context or help text in a styled tooltip.
 
 ### ExtensionApiContext.tsx
-Provides a React context for accessing the RoamJS extension API and its version. It includes hooks that allow any component in the tree to consume the API and version information. This component is marked as deprecated in favor of a utility in another directory.
+Provides a React context for accessing the RoamJS extension API and its version. It includes hooks that allow any component in the tree to consume the API and version information. **Note:** This component is marked as deprecated in favor of the `extensionApiContext` utility in `src/util/extensionApiContext.ts`.
 
 ### ExternalLogin.tsx
 Handles OAuth and other external authentication workflows. It manages pop-out login windows, state, and authentication data, with support for both local and remote account storage. The component displays the login UI, handles success and error states, and integrates with Roam blocks for storing credentials.
@@ -39,6 +83,88 @@ Implements a user interface for building complex filters with "includes" and "ex
 ### FormDialog.tsx
 A generic dialog component for creating forms. It supports a wide variety of field types, including text, number, select, page, block, autocomplete, checkbox (flag), and embeddable content. The dialog handles field dependencies, conditional rendering, asynchronous submission, and is deeply integrated with Roam for fetching block and page data. It also includes utility methods for rendering overlays and prompting for user input.
 
+### Loading.tsx
+A simple loading spinner component with a `renderLoading()` function. Can render a spinner UI and supports targeting specific UIDs for block-level loading indicators.
+
+### MenuItemSelect.tsx
+A generic menu select component built on Blueprint's Select. Supports filtering, custom item transformation, and custom children rendering. Highly configurable with custom button props and item predicate filtering.
+
+### OauthPanel.tsx
+Configuration component for OAuth account management. Displays a list of connected accounts with logout functionality. Uses local storage for account persistence and integrates with the OAuth configuration system.
+
+### OauthSelect.tsx
+Provides the `useOauthAccounts` hook for managing OAuth account dropdowns and selection. Handles account retrieval and selection state management.
+
+### PageInput.tsx
+A specialized wrapper around AutocompleteInput specifically for page selection. Auto-populates options from all page names in the graph, providing an easy way to select existing pages in forms and dialogs.
+
+### PageLink.tsx
+React component for rendering clickable page reference links. Supports shift+click to open in sidebar and ctrl+click for custom handlers. Handles page title resolution and URL generation automatically.
+
+### ProgressDialog.tsx
+Displays progress during batch write operations. Tracks remaining actions and displays expected completion time. Exported via `render()` function and includes an `ID` constant for targeting the dialog.
+
+### SimpleAlert.tsx
+A customizable alert component with markdown rendering support via `render()` function. Supports "Don't show again" checkbox functionality and external link handling. Useful for displaying notifications and confirmations.
+
+### Toast.tsx
+Toast notification component exported via `render()` function. Supports markdown rendering with custom styling, positioning options (top/bottom), intent levels (primary, success, warning, danger), timeouts, and custom action buttons. Uses an event-based system for displaying multiple toasts.
+
+## Configuration Panels (`src/components/ConfigPanels`)
+
+This subdirectory contains specialized panel components for building configuration pages. Each panel corresponds to a specific field type and handles rendering, validation, and data management.
+
+### Panel Components
+
+#### BlockPanel.tsx
+Panel for single block input in configuration. Allows users to select or reference a specific Roam block.
+
+#### BlocksPanel.tsx
+Panel for multiple block inputs. Supports adding, removing, and managing an array of block references.
+
+#### CustomPanel.tsx
+Generic panel wrapper for custom field components. Allows extensions to inject their own custom configuration UI elements.
+
+#### FlagPanel.tsx
+Checkbox/toggle panel for boolean flags. Renders a switch or checkbox for true/false configuration values.
+
+#### MultiChildPanel.tsx
+Panel for managing multiple child configuration nodes. Handles hierarchical configuration structures.
+
+#### MultiTextPanel.tsx
+Panel for multiple text input fields. Supports adding, removing, and reordering multiple text values.
+
+#### NumberPanel.tsx
+Panel for numeric input with validation. Supports min/max constraints and step values.
+
+#### PagesPanel.tsx
+Panel for selecting multiple pages from the graph. Provides autocomplete and validation for page references.
+
+#### SelectPanel.tsx
+Dropdown selection panel with predefined options. Supports single-select from a list of valid values.
+
+#### TextPanel.tsx
+Simple text input panel for string configuration values. The most common panel type.
+
+#### TimePanel.tsx
+Specialized time picker panel for time-based configuration values.
+
+### Panel Utilities
+
+#### getBrandColors.tsx
+Utility function for retrieving Roam's brand colors. Used to style panels consistently with Roam's UI.
+
+#### useSingleChildValue.tsx
+Custom React hook for managing single child value extraction from configuration trees. Simplifies working with tree-based configuration data.
+
+#### types.ts
+Comprehensive type definitions for all field panel types:
+- `TextField`, `TimeField`, `NumberField`, `FlagField` - Basic field types
+- `MultiTextField`, `PagesField`, `SelectField` - Multi-value field types
+- `BlockField`, `BlocksField`, `CustomField`, `OauthField` - Advanced field types
+- `FieldPanel` - Base panel interface
+- `UnionField` - Union type of all field types
+
 ## DOM Utilities (`src/dom`)
 
 This directory provides a collection of utility functions and constants for interacting with the Document Object Model (DOM) within Roam Research. These helpers enable developers to manipulate the UI, observe changes, and work with Roam-specific data attributes.
@@ -47,13 +173,18 @@ This directory provides a collection of utility functions and constants for inte
 
 *   **Adding Block Commands & Script Dependencies**:
     *   `addBlockCommand`: Adds a new command to the command palette for a specific block.
+    *   `addKeyboardTriggers`: Sets up keyboard trigger callbacks for block input. Supports RegExp, function, or tree-based triggers that fire on textarea input matching specific patterns.
     *   `addRoamJSDependency`, `addOldRoamJSDependency`, `addScriptAsDependency`: Manage and ensure required scripts are loaded for an extension to function correctly.
 
 *   **DOM Observation & Manipulation**:
-    *   `createBlockObserver`, `createHTMLObserver`, `createPageTitleObserver`, `createButtonObserver`, `createDivObserver`, `createOverlayObserver`: A suite of functions that use `MutationObserver` to monitor changes to specific parts of the Roam DOM and trigger callback functions.
+    *   `createBlockObserver`, `createHTMLObserver`, `createPageTitleObserver`, `createButtonObserver`, `createDivObserver`, `createOverlayObserver`, `createHashtagObserver`, `createPageObserver`: A suite of functions that use `MutationObserver` to monitor changes to specific parts of the Roam DOM and trigger callback functions.
+    *   `createHashtagObserver`: Observes hashtag span elements and adds attributes to prevent duplicate processing.
+    *   `createPageObserver`: Monitors block additions and removals on a specific page, tracking which blocks belong to that page.
 
 *   **Retrieving & Manipulating Roam-Specific Data**:
-    *   `getCurrentPageUid`, `getBlockUidFromTarget`, `getUids`, `getUidsFromId`, `getActiveUids`: Functions to retrieve unique identifiers (UIDs) for pages and blocks from various DOM elements and contexts.
+    *   `getCurrentPageUid`, `getBlockUidFromTarget`, `getUids`, `getUidsFromId`, `getUidsFromButton`, `getActiveUids`: Functions to retrieve unique identifiers (UIDs) for pages and blocks from various DOM elements and contexts.
+    *   `getUidsFromButton`: Specifically extracts UIDs from button DOM elements.
+    *   `getDomRefs`: Extracts block references from the currently editing block, returning an array of referenced block UIDs.
 
 *   **URL Generation & Reference Resolution**:
     *   `getRoamUrl`, `getRoamUrlByPage`: Generate sharable URLs for specific Roam pages or blocks.
@@ -125,15 +256,78 @@ This directory provides customized Markdown parsing and rendering for Roam Resea
 
 ## Database Queries (`src/queries`)
 
-This directory provides utility functions for querying and interacting with the Roam Research database. These functions enable data retrieval, manipulation, and normalization.
+This directory provides utility functions for querying and interacting with the Roam Research database. These functions enable data retrieval, manipulation, and normalization. With over 50 specialized query functions, this is the most comprehensive module in the library.
 
-### Key Functionalities
+### Block Retrieval Functions
 
-*   **Block & Page Retrieval**: Functions like `getAllBlockUids`, `getAllPageNames`, and `getFullTreeByParentUid` retrieve lists of blocks, pages, and their hierarchical data.
-*   **Attribute & Metadata Extraction**: `getAttributeValueByBlockAndName` retrieves the value of a specific attribute from a block using Datalog queries. Other utilities extract various metadata.
-*   **Tag & Reference Utilities**: Helpers for checking tag existence on a page (`isTagOnPage`) and working with block relationships.
-*   **Datalog Compilation**: `compileDatalog` converts Datalog query objects into the string format required to query Roam’s database.
-*   **Page Title Normalization**: `normalizePageTitle` escapes and standardizes page titles to ensure they can be safely used in queries.
+*   `getAllBlockUids`: Retrieves all block UIDs in the graph
+*   `getAllBlockUidsAndTexts`: Gets all blocks with their text content
+*   `getBlockUidAndTextIncludingText`: Searches blocks by text content, returns matching blocks
+*   `getBlockUidByTextOnPage`: Finds a specific block by text on a given page
+*   `getBlockUidsWithParentUid`: Gets all blocks with a specific parent UID
+*   `getBlockUidsByPageTitle`: Gets all blocks on a specific page
+*   `getFirstChildUidByBlockUid`: Returns the UID of the first child block
+*   `getFirstChildTextByBlockUid`: Returns the text of the first child block
+*   `getNthChildUidByBlockUid`: Gets the nth child block by index
+*   `getTextByBlockUid`: Retrieves the text content of a block
+*   `getOrderByBlockUid`: Gets the order/position value of a block
+*   `getCreateTimeByBlockUid`: Returns the creation timestamp of a block
+*   `getEditTimeByBlockUid`: Returns the last edit timestamp of a block
+
+### Page Retrieval Functions
+
+*   `getAllPageNames`: Gets all page titles in the graph
+*   `getPageTitleByBlockUid`: Gets the parent page title for a block
+*   `getPageTitleByPageUid`: Direct page title lookup by page UID
+*   `getPageUidByBlockUid`: Gets the parent page UID from a block
+*   `getPageUidByPageTitle`: Looks up page UID by page title
+*   `getPageTitlesStartingWithPrefix`: Searches pages by title prefix
+*   `getPageViewType`: Gets the view mode for a page (document, bullet, etc.)
+
+### Reference and Link Functions
+
+*   `getBlockUidsReferencingBlock`: Gets all blocks that reference a specific block
+*   `getBlockUidsReferencingPage`: Gets all blocks that reference a specific page
+*   `getBlockUidsAndTextsReferencingPage`: Gets blocks referencing a page with their text content
+*   `getPageTitlesReferencingBlockUid`: Gets page titles that reference a specific block
+*   `getPageTitlesAndBlockUidsReferencingPage`: Gets comprehensive reference info for a page
+*   `getPageTitlesAndUidsDirectlyReferencingPage`: Gets only direct page references (no nested)
+*   `getPageTitleReferencesByPageTitle`: Gets all references mentioned on a page
+*   `getLinkedPageTitlesUnderUid`: Gets page references in a block hierarchy
+
+### Hierarchy and Tree Functions
+
+*   `getParentUidByBlockUid`: Gets the direct parent UID of a block
+*   `getParentUidsOfBlockUid`: Gets all ancestor UIDs (full path to root)
+*   `getParentTextByBlockUid`: Gets the parent block's text content
+*   `getParentTextByBlockUidAndTag`: Gets parent text with tag filtering
+*   `getBasicTreeByParentUid`: Gets basic tree structure (shallow)
+*   `getShallowTreeByParentUid`: Gets shallow tree (one level deep)
+*   `getFullTreeByParentUid`: Gets complete tree structure with all descendants
+*   `getChildrenLengthByParentUid`: Counts direct children of a block
+*   `getChildrenLengthByPageUid`: Counts direct children of a page
+
+### User Information Functions
+
+*   `getCurrentUser`: Gets the full current user object
+*   `getCurrentUserUid`: Gets the current user's UID
+*   `getCurrentUserEmail`: Gets the current user's email address
+*   `getCurrentUserDisplayName`: Gets the current user's display name
+*   `getDisplayNameByUid`: Looks up display name by user UID
+*   `getDisplayNameByEmail`: Looks up display name by email address
+*   `getSettingsByEmail`: Gets user settings by email
+*   `getEditedUserEmailByBlockUid`: Gets the email of the last user to edit a block
+
+### Attribute and Metadata Functions
+
+*   `getAttributeValueByBlockAndName`: Retrieves custom attribute values from blocks using Datalog
+*   `isTagOnPage`: Checks if a specific tag exists on a page
+*   `isLiveBlock`: Checks if a block is currently live/active
+
+### Query Compilation and Utilities
+
+*   `compileDatalog`: Converts Datalog query objects into string format for querying
+*   `normalizePageTitle`: Escapes and standardizes page titles for safe use in queries
 
 ## Scripts (`src/scripts`)
 
@@ -143,6 +337,21 @@ This directory contains scripts for managing RoamJS extension publishing and dev
 
 *   **CLI Entry Point**: The `index.ts` file serves as the command-line interface entry point for building, testing, and deploying RoamJS extensions.
 *   **Extension Publishing Automation**: `publishToRoamDepot.ts` automates publishing an extension to the Roam Depot. It handles checking for existing pull requests, cloning the depot repository, updating the extension manifest, and creating or updating pull requests on GitHub.
+
+## Testing (`src/testing`)
+
+This directory provides utilities for testing RoamJS extensions in a mock environment.
+
+### Key Functionalities
+
+*   **`mockRoamEnvironment.ts`**: A comprehensive 58KB testing utility that provides:
+    *   **Mock Roam Database Environment**: Simulates Roam's database and API for unit testing
+    *   **EDN Parsing and Datalog Query Simulation**: Parses and executes Datalog queries against mock data
+    *   **Full Graph State Management**: Maintains mock graph state including blocks, pages, and relationships
+    *   **Block and Page Creation**: Supports creating test blocks and pages with proper UID generation
+    *   **Query Testing**: Allows testing of query functions without requiring a live Roam instance
+
+    This is essential for writing comprehensive unit tests for extensions without needing to run against a real Roam Research database.
 
 ## Type Definitions (`src/types`)
 
@@ -163,12 +372,71 @@ This directory provides a comprehensive set of utility functions that support al
 
 ### Key Functionalities
 
-*   **API Interaction**: Standardized functions for HTTP requests (`apiGet`, `apiPost`) and OAuth management.
-*   **DOM and Rendering**: Helpers for rendering overlays (`createOverlayRender`) and working with the DOM in Roam.
-*   **Data Extraction and Transformation**: Utilities to extract data from Roam content, such as references (`extractRef`) and tags (`extractTag`).
-*   **Settings and Configuration**: Functions to manage extension settings (`addInputSetting`, `getSettingValueFromTree`).
-*   **Extension Management**: Helpers to manage the extension lifecycle, including setup, cleanup, and deprecation warnings.
-*   **Miscellaneous Utilities**: Low-level helpers for tasks like DOM checks and web worker interactions.
+*   **API Interaction**:
+    *   `apiGet`: HTTP GET request wrapper with authorization support
+    *   `apiPost`: HTTP POST request wrapper with authorization support
+    *   `apiPut`: HTTP PUT request wrapper with authorization support
+    *   `apiDelete`: HTTP DELETE request wrapper with authorization support
+    *   `handleFetch`: Generic fetch handler with authorization, buffer support, error handling, and support for JSON, text, and ArrayBuffer responses
+    *   `handleBodyFetch`: Specialized fetch for request bodies
+    *   `handleUrlFetch`: Specialized fetch for URL-based requests
+
+*   **DOM and Rendering**:
+    *   `createOverlayRender`: Creates a render function for overlay components
+    *   `renderOverlay`: Renders overlay components
+    *   `renderWithUnmount`: Renders React component with automatic unmounting support
+    *   `getRenderRoot`: Gets the React render root for a container
+    *   `focusMainWindowBlock`: Sets focus and selection on a specific block in the main window
+
+*   **Data Extraction and Transformation**:
+    *   `extractRef`: Extracts block references from text
+    *   `extractTag`: Extracts hashtags from text
+    *   `createTagRegex`: Creates regex pattern for tag matching
+    *   `toFlexRegex`: Creates flexible regex for fuzzy matching
+    *   `idToTitle`: Converts ID format to page title format
+    *   `stripUid`: Removes UID from block reference format
+    *   `toConfigPageName`: Converts extension name to config page name format
+
+*   **Settings and Configuration**:
+    *   `addInputSetting`: Adds new settings to configuration
+    *   `setInputSetting`: Sets a single setting value
+    *   `setInputSettings`: Sets multiple settings at once
+    *   `getSettingValueFromTree`: Retrieves setting values from config tree
+    *   `getSettingValuesFromTree`: Gets multiple setting values
+    *   `getSettingIntFromTree`: Gets integer setting values
+    *   `getSubTree`: Extracts configuration subtree
+
+*   **Local Storage Management**:
+    *   `localStorageGet`: Wrapper for localStorage.getItem with graph-aware key handling
+    *   `localStorageSet`: Wrapper for localStorage.setItem with graph-aware key handling
+    *   `localStorageRemove`: Wrapper for localStorage.removeItem with graph-aware key handling
+    *   `getLocalStorageKey`: Generates localStorage keys with optional graph prefix
+
+*   **OAuth and Authentication**:
+    *   `getOauth`: Gets OAuth configuration for a service
+    *   `getOauthAccounts`: Retrieves stored OAuth accounts from configuration
+    *   `getToken`: Retrieves authentication token
+    *   `getTokenFromTree`: Extracts token from configuration tree
+    *   `getAuthorizationHeader`: Generates Authorization header for API requests
+
+*   **Extension Management**:
+    *   `runExtension`: Main extension lifecycle manager that handles setup, initialization, and cleanup
+    *   `extensionApiContext`: Extension API context provider utility
+    *   `extensionDeprecatedWarning`: Displays deprecation warnings for extensions
+    *   `dispatchToRegistry`: Dispatches lifecycle events to extension registry
+    *   `removeFromRegistry`: Removes listeners and handlers from extension registry
+    *   `registerSmartBlocksCommand`: Registers commands with SmartBlocks extension, returns unregister function
+    *   `registerExperimentalMode`: Manages experimental feature flags with warnings, creates enable/disable commands in command palette
+
+*   **Environment and Configuration**:
+    *   `getNodeEnv()`: Returns NODE_ENV value
+    *   `getRoamJSVersionEnv()`: Returns ROAMJS_VERSION
+    *   `getApiUrlEnv()`: Returns API URL (production vs development)
+    *   `getRoamJSExtensionIdEnv()`: Returns extension ID
+
+*   **Miscellaneous Utilities**:
+    *   `isControl`: Checks if a key press is a control key (Ctrl/Cmd)
+    *   `getWorkerClient`: Gets Web Worker client interface for background processing
 
 ## Database Writes (`src/writes`)
 
