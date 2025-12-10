@@ -1,10 +1,53 @@
 # RoamJS Components Library Overview
 
-This document provides a comprehensive overview of the modules and components available in the RoamJS Components library, a collection of utilities and React components for developing extensions for Roam Research.
-
-**Version:** 0.85.7
+**Last Updated:** 2025-12-10
+**Library Version:** 0.85.7
 **License:** MIT
 **Repository:** https://github.com/RoamJS/roamjs-components
+
+---
+
+## 📖 Document Guide
+
+This document provides a comprehensive overview of the modules and components available in the RoamJS Components library, a collection of utilities and React components for developing extensions for Roam Research.
+
+**For LLMs:** This document is organized into 12 major module sections. Use the Table of Contents below to navigate directly to relevant sections. The most commonly used modules are:
+- **Database Queries** (`src/queries`) - 50+ functions for reading data
+- **Database Writes** (`src/writes`) - Functions for creating/updating blocks and pages
+- **Utility Functions** (`src/util`) - 45+ helper functions including `runExtension`
+- **Components** (`src/components`) - 20+ React components for UI
+
+---
+
+## Table of Contents
+
+1. [Overview](#overview)
+2. [Import Pattern](#import-pattern)
+3. [Quick Start Guide](#quick-start-guide)
+4. [Components (`src/components`)](#components-srccomponents)
+   - [UI Components](#ui-components) (20 components)
+5. [Configuration Panels (`src/components/ConfigPanels`)](#configuration-panels-srccomponentsconfigpanels)
+   - [Panel Components](#panel-components) (11 panels)
+   - [Panel Utilities](#panel-utilities)
+6. [DOM Utilities (`src/dom`)](#dom-utilities-srcdom)
+7. [Event Handling (`src/events`)](#event-handling-srcevents)
+8. [Date Utilities (`src/date`)](#date-utilities-srcdate)
+9. [React Hooks (`src/hooks`)](#react-hooks-srchooks)
+10. [Markdown Parsing (`src/marked`)](#markdown-parsing-srcmarked)
+11. [Database Queries (`src/queries`)](#database-queries-srcqueries)
+    - [Block Retrieval Functions](#block-retrieval-functions)
+    - [Page Retrieval Functions](#page-retrieval-functions)
+    - [Reference and Link Functions](#reference-and-link-functions)
+    - [Hierarchy and Tree Functions](#hierarchy-and-tree-functions)
+    - [User Information Functions](#user-information-functions)
+    - [Attribute and Metadata Functions](#attribute-and-metadata-functions)
+12. [Scripts (`src/scripts`)](#scripts-srcscripts)
+13. [Testing (`src/testing`)](#testing-srctesting)
+14. [Type Definitions (`src/types`)](#type-definitions-srctypes)
+15. [Utility Functions (`src/util`)](#utility-functions-srcutil)
+16. [Database Writes (`src/writes`)](#database-writes-srcwrites)
+
+---
 
 ## Overview
 
@@ -35,6 +78,75 @@ import { AutocompleteInput } from "roamjs-components/components"
 import { getTextByBlockUid } from "roamjs-components/queries"
 ```
 
+## Quick Start Guide
+
+### Most Common Operations
+
+**Reading Data:**
+```typescript
+import getTextByBlockUid from "roamjs-components/queries/getTextByBlockUid"
+import getPageUidByPageTitle from "roamjs-components/queries/getPageUidByPageTitle"
+import getFullTreeByParentUid from "roamjs-components/queries/getFullTreeByParentUid"
+
+const blockText = getTextByBlockUid("your-block-uid")
+const pageUid = getPageUidByPageTitle("Page Title")
+const tree = getFullTreeByParentUid("parent-uid")
+```
+
+**Writing Data:**
+```typescript
+import createBlock from "roamjs-components/writes/createBlock"
+import updateBlock from "roamjs-components/writes/updateBlock"
+import createPage from "roamjs-components/writes/createPage"
+
+createBlock({ node: { text: "New block" }, parentUid: "parent-uid" })
+updateBlock({ uid: "block-uid", text: "Updated text" })
+createPage({ title: "New Page" })
+```
+
+**Extension Setup:**
+```typescript
+import runExtension from "roamjs-components/util/runExtension"
+
+runExtension({
+  extensionId: "your-extension",
+  run: (args) => {
+    // Your extension initialization code
+  },
+  uninstall: () => {
+    // Cleanup code
+  }
+})
+```
+
+**UI Components:**
+```typescript
+import FormDialog from "roamjs-components/components/FormDialog"
+import Toast from "roamjs-components/components/Toast"
+
+// Show a form dialog
+FormDialog.render({
+  title: "My Form",
+  fields: [
+    { name: "name", type: "text", label: "Name" }
+  ],
+  onSubmit: (values) => console.log(values)
+})
+
+// Show a toast notification
+Toast.render({ content: "Success!", intent: "success" })
+```
+
+### Finding the Right Function
+
+- **Need to read data?** → See [Database Queries](#database-queries-srcqueries)
+- **Need to write/update data?** → See [Database Writes](#database-writes-srcwrites)
+- **Need UI components?** → See [Components](#components-srccomponents)
+- **Need to watch DOM changes?** → See [DOM Utilities](#dom-utilities-srcdom)
+- **Need settings/config management?** → See [Utility Functions](#utility-functions-srcutil) (Settings section)
+
+---
+
 ## Components (`src/components`)
 
 This directory contains reusable React components designed to integrate seamlessly with the Roam Research UI.
@@ -50,64 +162,66 @@ import FormDialog from "roamjs-components/components/FormDialog"
 import { AutocompleteInput, FormDialog } from "roamjs-components/components"
 ```
 
-### AutocompleteInput.tsx
+### UI Components
+
+#### AutocompleteInput.tsx
 Implements a generic autocomplete input field. It is highly customizable, supporting various options, multiline input, and fuzzy search for filtering. The component manages its own state, handles keyboard navigation, and displays a popover menu with selectable options, including support for creating new items.
 
-### BlockErrorBoundary.tsx
+#### BlockErrorBoundary.tsx
 A React error boundary component designed for wrapping custom components rendered in Roam blocks. If an error occurs within its children, it catches the error, logs it by creating a new block in Roam with an error message, and then displays a fallback UI.
 
-### BlockInput.tsx
+#### BlockInput.tsx
 Provides a specialized search input for finding Roam Research blocks. As a user types, it uses regex to search all blocks and displays a menu of matching results. It supports selection via keyboard or mouse and is ideal for quick block referencing in forms or dialogs.
 
-### ComponentContainer.tsx
+#### ComponentContainer.tsx
 A wrapper component that adds editing functionality to its children when hovered. It can focus and select the underlying Roam block when an edit icon is clicked. This is often used to embed custom components into Roam blocks while providing additional UI controls.
 
-### ConfigPage.tsx
+#### ConfigPage.tsx
 The main configuration page component for RoamJS extensions. It supports both legacy and new configuration structures, renders various field types and tabs, and manages the enabling and disabling of features. It also includes utilities for rendering and observing configuration pages, allowing for dynamic updates.
 
-### CursorMenu.tsx
+#### CursorMenu.tsx
 Implements a popover menu that appears at the cursor's position within a textarea. It allows users to select from a list of filtered options, using fuzzy search and keyboard navigation. The component integrates with Roam block updates and is useful for features like autocomplete or user mentions.
 
-### Description.tsx
+#### Description.tsx
 Renders a small info icon that displays a descriptive tooltip on hover. This component is used to annotate UI elements with additional context or help text in a styled tooltip.
 
-### ExtensionApiContext.tsx
+#### ExtensionApiContext.tsx
 Provides a React context for accessing the RoamJS extension API and its version. It includes hooks that allow any component in the tree to consume the API and version information. **Note:** This component is marked as deprecated in favor of the `extensionApiContext` utility in `src/util/extensionApiContext.ts`.
 
-### ExternalLogin.tsx
+#### ExternalLogin.tsx
 Handles OAuth and other external authentication workflows. It manages pop-out login windows, state, and authentication data, with support for both local and remote account storage. The component displays the login UI, handles success and error states, and integrates with Roam blocks for storing credentials.
 
-### Filter.tsx
+#### Filter.tsx
 Implements a user interface for building complex filters with "includes" and "excludes" logic across multiple categories. It supports fuzzy search, toggling filters, and displays the active filter state with color cues. It is used to filter data sets in UI views, such as tables or search results.
 
-### FormDialog.tsx
+#### FormDialog.tsx
 A generic dialog component for creating forms. It supports a wide variety of field types, including text, number, select, page, block, autocomplete, checkbox (flag), and embeddable content. The dialog handles field dependencies, conditional rendering, asynchronous submission, and is deeply integrated with Roam for fetching block and page data. It also includes utility methods for rendering overlays and prompting for user input.
 
-### Loading.tsx
+#### Loading.tsx
 A simple loading spinner component with a `renderLoading()` function. Can render a spinner UI and supports targeting specific UIDs for block-level loading indicators.
 
-### MenuItemSelect.tsx
+#### MenuItemSelect.tsx
 A generic menu select component built on Blueprint's Select. Supports filtering, custom item transformation, and custom children rendering. Highly configurable with custom button props and item predicate filtering.
 
-### OauthPanel.tsx
+#### OauthPanel.tsx
 Configuration component for OAuth account management. Displays a list of connected accounts with logout functionality. Uses local storage for account persistence and integrates with the OAuth configuration system.
 
-### OauthSelect.tsx
+#### OauthSelect.tsx
 Provides the `useOauthAccounts` hook for managing OAuth account dropdowns and selection. Handles account retrieval and selection state management.
 
-### PageInput.tsx
+#### PageInput.tsx
 A specialized wrapper around AutocompleteInput specifically for page selection. Auto-populates options from all page names in the graph, providing an easy way to select existing pages in forms and dialogs.
 
-### PageLink.tsx
+#### PageLink.tsx
 React component for rendering clickable page reference links. Supports shift+click to open in sidebar and ctrl+click for custom handlers. Handles page title resolution and URL generation automatically.
 
-### ProgressDialog.tsx
+#### ProgressDialog.tsx
 Displays progress during batch write operations. Tracks remaining actions and displays expected completion time. Exported via `render()` function and includes an `ID` constant for targeting the dialog.
 
-### SimpleAlert.tsx
+#### SimpleAlert.tsx
 A customizable alert component with markdown rendering support via `render()` function. Supports "Don't show again" checkbox functionality and external link handling. Useful for displaying notifications and confirmations.
 
-### Toast.tsx
+#### Toast.tsx
 Toast notification component exported via `render()` function. Supports markdown rendering with custom styling, positioning options (top/bottom), intent levels (primary, success, warning, danger), timeouts, and custom action buttons. Uses an event-based system for displaying multiple toasts.
 
 ## Configuration Panels (`src/components/ConfigPanels`)
