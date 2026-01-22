@@ -122,8 +122,7 @@
                         - See the [datomic docs](https://docs.datomic.com/on-prem/query/query.html) for a full explanation of datalog queries
                             - Or http://www.learndatalogtoday.org learn how to write them
                             - [Datascript tests](https://github.com/tonsky/datascript/tree/master/test/datascript/test) also include great examples
-                        - `q`, `pull`, and variant API functions now have a timeout of 20 seconds
-                            - Throws an error with message `Query and/or pull expression took too long to run.` when you run into the timeout limit
+                        - {{[[embed]]: `q`, `pull`, and variant API functions now have a timeout of 20 seconds}}
                     - Parameters::
                         - `query`
                             - Type::
@@ -144,8 +143,7 @@
                         - See for the [datomic docs](https://docs.datomic.com/on-prem/query/pull.html) for a good explanation of how to use pull
                             - There are slight differences because we use [datascript](https://github.com/tonsky/datascript) internally, but it supports the majority of datomic syntax
                             - The main difference is the JS API the pattern is written in a string instead of clojure data structures
-                        - `q`, `pull`, and variant API functions now have a timeout of 20 seconds
-                            - Throws an error with message `Query and/or pull expression took too long to run.` when you run into the timeout limit
+                        - {{[[embed]]: `q`, `pull`, and variant API functions now have a timeout of 20 seconds}}
                     - Parameters::
                         - `pattern`
                             - Type::
@@ -177,8 +175,7 @@
                     - Description::
                         - Same as `.pull` but for multiple entities
                             - May be faster for pulling many entities at the same time
-                        - `q`, `pull`, and variant API functions now have a timeout of 20 seconds
-                            - Throws an error with message `Query and/or pull expression took too long to run.` when you run into the timeout limit
+                        - {{[[embed]]: `q`, `pull`, and variant API functions now have a timeout of 20 seconds}}
                     - Parameters::
                         - `pattern`
                             - Same as pull's `pattern`
@@ -202,10 +199,45 @@
                                         - Then it should be able to be accessed like this
                                             - `obj.string`
                             - For a deeper explanation of how this works internally and the trade offs see https://blog.wsscode.com/alternative-to-clj-js/
-                        - `q`, `pull`, and variant API functions now have a timeout of 20 seconds
-                            - Throws an error with message `Query and/or pull expression took too long to run.` when you run into the timeout limit
+                        - {{[[embed]]: `q`, `pull`, and variant API functions now have a timeout of 20 seconds}}
                     - functions::
                         - `.q`
+                - `.search`
+                    - Description::
+                        - Searches pages and blocks matching a query string
+                        - Equivalent to the "Find or Create Page" search algorithm in the UI
+                        - Results are ranked by relevance using the following priority:
+                            - **Rank 0**: Page title exactly matches query
+                            - **Rank 1**: Page title contains query as substring
+                            - **Rank 2**: Page title contains all query words (multi-word queries only)
+                            - **Rank 3**: Block contains query as substring
+                            - **Rank 4**: Block contains all query words (multi-word queries only)
+                    - Parameters::
+                        - `search-str` **required**
+                            - The search query string
+                        - `search-blocks` **optional**
+                            - Include block results
+                            - default: `true`
+                        - `search-pages` **optional**
+                            - Include page results
+                            - default: `true`
+                        - `hide-code-blocks` **optional**
+                            - Exclude code blocks from results
+                            - default: `false`
+                        - `limit` **optional**
+                            - Maximum number of results to return
+                            - default: `300`
+                            - max: `1000`
+                        - `pull` **optional**
+                            - Pull pattern for customizing returned fields
+                            - Can be a string or array
+                            - default: `[:block/string :node/title :block/uid]`
+                    - Example::
+                        - ```javascript
+                          roamAlphaAPI.data.search({"search-str": "my query"})
+                          ```
+                    - Returns::
+                        - Array of results matching the pull pattern
                 - `.async`
                     - Description::
                         - The functions under `.async` are equivalent to the non async versions, except they return promises.
@@ -213,6 +245,7 @@
                     - `.q`
                     - `.pull`
                     - `.pull_many`
+                    - `.search`
                     - `.fast`
                         - `.q`
                 - `.backend`
@@ -240,7 +273,7 @@
                             - Required
                     - Returns::
                         - Promise which resolves once operation has completed
-                            - More details [here](((CMKX2Zpwl)))
+                            - More details [here](Write functions in roamAlphaAPI now utilize promises.)
                     - Usage::
                         - ```javascript
                           window
@@ -270,7 +303,7 @@
                             - Optional
                     - Returns::
                         - Promise which resolves once operation has completed
-                            - More details [here](((CMKX2Zpwl)))
+                            - More details [here](Write functions in roamAlphaAPI now utilize promises.)
                     - Usage::
                         - ```javascript
                           const pullPattern = '[:block/children :block/string {:block/children ...}]';
@@ -305,7 +338,7 @@
                         - None
                     - Returns::
                         - Promise which resolves once operation has completed
-                            - More details [here](((CMKX2Zpwl)))
+                            - More details [here](Write functions in roamAlphaAPI now utilize promises.)
                     - Usage::
                 - `.redo`
                     - Description::
@@ -313,7 +346,7 @@
                         - None
                     - Returns::
                         - Promise which resolves once operation has completed
-                            - More details [here](((CMKX2Zpwl)))
+                            - More details [here](Write functions in roamAlphaAPI now utilize promises.)
                     - Usage::
                 - `.block`
                     - `create`
@@ -333,7 +366,7 @@
                                 - `block-view-type` **optional**
                         - Returns::
                             - Promise which resolves once operation has completed
-                                - More details [here](((CMKX2Zpwl)))
+                                - More details [here](Write functions in roamAlphaAPI now utilize promises.)
                         - Usage::
                             - [[roam/js]]
                                 - ```javascript
@@ -378,7 +411,7 @@
                                 - `order` **required**
                         - Returns::
                             - Promise which resolves once operation has completed
-                                - More details [here](((CMKX2Zpwl)))
+                                - More details [here](Write functions in roamAlphaAPI now utilize promises.)
                         - Usage::
                             - [[roam/js]]
                                 - ```javascript
@@ -426,7 +459,7 @@
                                 - `block-view-type` **optional**
                         - Returns::
                             - Promise which resolves once operation has completed
-                                - More details [here](((CMKX2Zpwl)))
+                                - More details [here](Write functions in roamAlphaAPI now utilize promises.)
                         - Usage::
                             - [[roam/js]]
                                 - ```javascript
@@ -464,7 +497,7 @@
                                 - `uid` **required**
                         - Returns::
                             - Promise which resolves once operation has completed
-                                - More details [here](((CMKX2Zpwl)))
+                                - More details [here](Write functions in roamAlphaAPI now utilize promises.)
                         - [[roam/js]]
                             - ```javascript
                               window
@@ -492,6 +525,27 @@
                                    "delete block"])
                               ```
                             - {{[[roam/render]]: ((GOWw9B2MX))}}
+                    - `fromMarkdown`
+                        - Description::
+                            - Parses a markdown string into blocks and inserts them at a location
+                            - Uses the same markdown parsing logic as the file import feature
+                            - Nested lists become nested blocks
+                            - Supports standard markdown: headings, lists, code blocks, bold, italic, links, etc.
+                        - Parameters::
+                            - `location`
+                                - `parent-uid` **required**
+                                - `order` **required**
+                            - `markdown-string` required
+                                - The markdown content to parse into blocks
+                        - Example::
+                            - ```javascript
+                              window.roamAlphaAPI.data.block.fromMarkdown({
+                                  location: { "parent-uid": "4VuwigG1O", "order": "first" },
+                                  "markdown-string": "# Hello\n\n- Item 1\n- Item 2\n  - Nested"
+                                });
+                              ```
+                        - Returns::
+                            - Promise which resolves once operation has completed
                     - `reorderBlocks`
                         - Description::
                             - Takes a `parent-uid` and an array of all the direct children of that block, and reorders the blocks according to the order provided in the array. 
@@ -503,7 +557,7 @@
                                 - **required**
                         - Returns::
                             - Promise which resolves once operation has completed
-                                - More details [here](((CMKX2Zpwl)))
+                                - More details [here](Write functions in roamAlphaAPI now utilize promises.)
                         - Usage::
                             - example blocks
                                 - 1
@@ -526,8 +580,33 @@
                                     - in normal operation, should not be required
                                 - `children-view-type` **optional**
                         - Returns::
-                            - Promise which resolves once operation has completed
-                                - More details [here](((CMKX2Zpwl)))
+                            - Promise which resolves once operation has [completed](Write functions in roamAlphaAPI now utilize promises.)
+                    - `fromMarkdown`
+                        - Description::
+                            - Creates a new page with a given title and populates it with blocks parsed from a markdown string
+                            - Uses the same markdown parsing logic as the file import feature
+                            - Pages with title in the format of January 21st, 2021 will create a new daily note if it does not yet exist
+                            - Will error if a page with the given title already exists
+                        - Parameters::
+                            - `page`
+                                - `title` **required**
+                                - `uid` **optional**
+                                    - in normal operation, should not be required
+                                - `children-view-type` **optional**
+                            - `markdown-string` required
+                                - The markdown content to parse into blocks
+                                - Supports standard markdown: headings, lists, code blocks, bold, italic, links, etc.
+                        - Example::
+                            - ```javascript
+                              window.roamAlphaAPI.data.page.fromMarkdown({
+                                  page: {
+                                    title: "My New Page"
+                                  },
+                                  "markdown-string": "# Heading\n\n- Item 1\n- Item 2"
+                                })
+                              ```
+                        - Returns::
+                            - Promise which resolves once operation has [completed](Write functions in roamAlphaAPI now utilize promises.)
                     - `update`
                         - Description::
                             - Updates a page's title and/or its children-view-type
@@ -537,8 +616,7 @@
                                 - `title` **optional**
                                 - `children-view-type` **optional**
                         - Returns::
-                            - Promise which resolves once operation has completed
-                                - More details [here](((CMKX2Zpwl)))
+                            - Promise which resolves once operation has [completed](Write functions in roamAlphaAPI now utilize promises.)
                     - `delete`
                         - Description::
                             - Delete a page and all its children blocks
@@ -546,8 +624,32 @@
                             - `page`
                                 - `uid` **required**
                         - Returns::
-                            - Promise which resolves once operation has completed
-                                - More details [here](((CMKX2Zpwl)))
+                            - Promise which resolves once operation has [completed](Write functions in roamAlphaAPI now utilize promises.)
+                    - `addShortcut`
+                        - Description::
+                            - Add page to the left sidebar shortcuts, supply an index to add at a specific place, or none to add at the end
+                            - Can also use to update the index
+                        - Parameters::
+                            - `uid` **required**
+                            - `index`
+                        - Example::
+                            - ```javascript
+                              roamAlphaAPI.data.page.addShortcut("12-11-2025");
+                              roamAlphaAPI.data.page.addShortcut("12-11-2025", 4);
+                              ```
+                        - Returns::
+                            - Promise which resolves once operation has [completed](Write functions in roamAlphaAPI now utilize promises.)
+                    - `removeShortcut`
+                        - Description::
+                            - removes page from shortcuts
+                        - Parameters::
+                            - `uid` **required**
+                        - Example::
+                            - ```javascript
+                              roamAlphaAPI.data.page.removeShortcut("12-11-2025")
+                              ```
+                        - Returns::
+                            - Promise which resolves once operation has [completed](Write functions in roamAlphaAPI now utilize promises.)
                 - `.user`
                     - `upsert`
                         - Description::
@@ -563,8 +665,10 @@
                                         - __string__
                         - Returns::
                             - Promise which resolves once operation has completed
-                                - More details [here](((CMKX2Zpwl)))
+                                - More details [here](Write functions in roamAlphaAPI now utilize promises.)
                         - Usage::
+                - `.ai` [[experimental]]
+                    - I wouldn't recommend using these functions, they will have breaking changes and are intended to be consumed by AI
             - `.ui`
                 - `.getFocusedBlock`
                     - Description::
@@ -631,7 +735,7 @@
                                 - `uid` **required**
                         - Returns::
                             - Promise which resolves once operation has completed
-                                - More details [here](((CMKX2Zpwl)))
+                                - More details [here](Write functions in roamAlphaAPI now utilize promises.)
                         - Usage::
                             - [[roam/js]]
                                 - ```javascript
@@ -652,7 +756,7 @@
                                     - `uid`
                         - Returns::
                             - Promise which resolves once operation has completed
-                                - More details [here](((CMKX2Zpwl)))
+                                - More details [here](Write functions in roamAlphaAPI now utilize promises.)
                         - Usage::
                             - [[roam/js]]
                                 - ```javascript
@@ -673,7 +777,38 @@
                             - none
                         - Returns::
                             - Promise which resolves once operation has completed
-                                - More details [here](((CMKX2Zpwl)))
+                                - More details [here](Write functions in roamAlphaAPI now utilize promises.)
+                    - `.getOpenView`
+                        - Description::
+                            - Returns an object describing what is currently displayed in the main window (outline, log, graph, diagram, pdf, search, or custom component)
+                        - Parameters::
+                            - none
+                        - return example::
+                            - ```javascript
+                              // Page outline
+                              { type: "outline", uid: "Vfht187T1", title: "My Page Title" }
+                              
+                              // Block outline (zoomed into a block)
+                              { type: "outline", uid: "abc123xyz", "block-string": "Some block content" }
+                              
+                              // Daily notes log
+                              { type: "log" }
+                              
+                              // Graph view
+                              { type: "graph" }
+                              
+                              // Diagram
+                              { type: "diagram", uid: "diagram-uid" }
+                              
+                              // PDF viewer
+                              { type: "pdf", uid: "pdf-block-uid" }
+                              
+                              // All pages search
+                              { type: "search" }
+                              
+                              // Custom component
+                              { type: "custom", id: "component-id", args: [] }
+                              ```
                     - `.getOpenPageOrBlockUid`
                         - Description::
                             - Returns the uid string of the page/block currently open in the main window
@@ -697,7 +832,7 @@
                             - none
                         - Returns::
                             - Promise which resolves once operation has completed
-                                - More details [here](((CMKX2Zpwl)))
+                                - More details [here](Write functions in roamAlphaAPI now utilize promises.)
                     - `.close`
                         - Description::
                             - closes/hides the left sidebar
@@ -705,7 +840,7 @@
                             - none
                         - Returns::
                             - Promise which resolves once operation has completed
-                                - More details [here](((CMKX2Zpwl)))
+                                - More details [here](Write functions in roamAlphaAPI now utilize promises.)
                 - `.rightSidebar`
                     - `.open`
                         - Description::
@@ -714,7 +849,7 @@
                             - None
                         - Returns::
                             - Promise which resolves once operation has completed
-                                - More details [here](((CMKX2Zpwl)))
+                                - More details [here](Write functions in roamAlphaAPI now utilize promises.)
                         - Usage::
                             - [[roam/js]]
                                 - ```javascript
@@ -727,7 +862,7 @@
                             - None
                         - Returns::
                             - Promise which resolves once operation has completed
-                                - More details [here](((CMKX2Zpwl)))
+                                - More details [here](Write functions in roamAlphaAPI now utilize promises.)
                         - Usage::
                             - [[roam/js]]
                                 - ```javascript
@@ -764,19 +899,13 @@
                                 - `block-uid`
                                     - Required
                                     - If `type` = "search-query", then you need to pass `search-query-str` parameter instead of `block-uid`
-                                        - Example usage
-                                            - ```javascript
-                                              // Add a window that searches for "API"
-                                              window.roamAlphaAPI.ui.rightSidebar
-                                                .addWindow({window:
-                                                            {type:'search-query' ,'search-query-str':'API'}})
-                                              ```
+                                        - {{embed: Example usage}}
                                 - `order`
                                     - optional
                                     - if not specified, new window will be at the top of the right sidebar
                         - Returns::
                             - Promise which resolves once operation has completed
-                                - More details [here](((CMKX2Zpwl)))
+                                - More details [here](Write functions in roamAlphaAPI now utilize promises.)
                         - Usage::
                             - [[roam/js]]
                                 - ```javascript
@@ -816,7 +945,7 @@
                                     - If `type` = "search-query", then you need to pass `search-query-str` parameter instead of `block-uid`
                         - Returns::
                             - Promise which resolves once operation has completed
-                                - More details [here](((CMKX2Zpwl)))
+                                - More details [here](Write functions in roamAlphaAPI now utilize promises.)
                         - Usage::
                     - `.expandWindow`
                         - Description::
@@ -835,7 +964,7 @@
                                     - If `type` = "search-query", then you need to pass `search-query-str` parameter instead of `block-uid`
                         - Returns::
                             - Promise which resolves once operation has completed
-                                - More details [here](((CMKX2Zpwl)))
+                                - More details [here](Write functions in roamAlphaAPI now utilize promises.)
                         - Usage::
                     - `.collapseWindow`
                         - Description::
@@ -854,7 +983,7 @@
                                     - If `type` = "search-query", then you need to pass `search-query-str` parameter instead of `block-uid`
                         - Returns::
                             - Promise which resolves once operation has completed
-                                - More details [here](((CMKX2Zpwl)))
+                                - More details [here](Write functions in roamAlphaAPI now utilize promises.)
                         - Usage::
                     - `.pinWindow`
                         - Description::
@@ -880,7 +1009,7 @@
                                     - If another window was already pinned to top, it will be unpinned
                         - Returns::
                             - Promise which resolves once operation has completed
-                                - More details [here](((CMKX2Zpwl)))
+                                - More details [here](Write functions in roamAlphaAPI now utilize promises.)
                         - Usage::
                     - `.unpinWindow`
                         - Description::
@@ -899,7 +1028,7 @@
                                     - If `type` = "search-query", then you need to pass `search-query-str` parameter instead of `block-uid`
                         - Returns::
                             - Promise which resolves once operation has completed
-                                - More details [here](((CMKX2Zpwl)))
+                                - More details [here](Write functions in roamAlphaAPI now utilize promises.)
                         - Usage::
                     - `.setWindowOrder`
                         - Description::
@@ -920,7 +1049,7 @@
                                     - Required
                         - Returns::
                             - Promise which resolves once operation has completed
-                                - More details [here](((CMKX2Zpwl)))
+                                - More details [here](Write functions in roamAlphaAPI now utilize promises.)
                         - Usage::
                 - `.filters`
                     - `.addGlobalFilter`
@@ -935,7 +1064,7 @@
                                 - __string__
                         - Returns::
                             - Promise which resolves once operation has completed
-                                - More details [here](((CMKX2Zpwl)))
+                                - More details [here](Write functions in roamAlphaAPI now utilize promises.)
                     - `.removeGlobalFilter`
                         - Description::
                             - Removes a global filter
@@ -948,7 +1077,7 @@
                                 - __string__
                         - Returns::
                             - Promise which resolves once operation has completed
-                                - More details [here](((CMKX2Zpwl)))
+                                - More details [here](Write functions in roamAlphaAPI now utilize promises.)
                     - `.getGlobalFilters`
                         - Description::
                             - Returns a list of global filters currently in place, distinguishing between "includes" and "removes"
@@ -1040,7 +1169,7 @@
                                     - array of page titles
                         - Returns::
                             - Promise which resolves once operation has completed
-                                - More details [here](((CMKX2Zpwl)))
+                                - More details [here](Write functions in roamAlphaAPI now utilize promises.)
                         - Usage::
                             - ```javascript
                               window.roamAlphaAPI.ui.filters.setPageFilters(
@@ -1072,7 +1201,7 @@
                                     - array of page titles
                         - Returns::
                             - Promise which resolves once operation has completed
-                                - More details [here](((CMKX2Zpwl)))
+                                - More details [here](Write functions in roamAlphaAPI now utilize promises.)
                         - Usage::
                             - ```javascript
                               window.roamAlphaAPI.ui.filters.setPageLinkedRefsFilters(
@@ -1106,7 +1235,7 @@
                                     - array of page titles
                         - Returns::
                             - Promise which resolves once operation has completed
-                                - More details [here](((CMKX2Zpwl)))
+                                - More details [here](Write functions in roamAlphaAPI now utilize promises.)
                         - Usage::
                             - ```javascript
                               window.roamAlphaAPI.ui.filters.setSidebarWindowFilters(
@@ -1177,7 +1306,7 @@
                                 - user can customize this from the "Hotkeys" menu
                         - Returns::
                             - Promise which resolves once operation has completed
-                                - More details [here](((CMKX2Zpwl)))
+                                - More details [here](Write functions in roamAlphaAPI now utilize promises.)
                         - Usage::
                             - [[roam/js]]
                                 - ```javascript
@@ -1218,7 +1347,7 @@
                                 - __string__
                         - Returns::
                             - Promise which resolves once operation has completed
-                                - More details [here](((CMKX2Zpwl)))
+                                - More details [here](Write functions in roamAlphaAPI now utilize promises.)
                         - Usage::
                             - [[roam/js]]
                                 - ```javascript
@@ -1238,12 +1367,12 @@
                                 - Function called with `context` but without the `indexes` which should return true if the command should be shown or false if not.
                                     - `context`
                                         - ```javascript
-                                        {
+                                          {
                                             block-uid: "YnatnbZzF",
                                             window-id: "BBG4fFwolaVlT5FZQdzAI7P40aB3-body-outline-04-15-2021",
                                             indexes: [1 10]
-                                        }
-                                        ```
+                                          }
+                                          ```
                             - `callback`: __function__
                                 - Function called with `context` when the user selects the command in block context menu. 
                                 - It should return either
@@ -1253,17 +1382,17 @@
                             - null
                         - Usage::
                             - ```javascript
-                            window.roamAlphaAPI.ui.slashCommand.addCommand({
+                              window.roamAlphaAPI.ui.slashCommand.addCommand({
                                 label: "Quick Test",
                                 'display-conditional': (args) => {
-                                console.log("display:", args);
+                                  console.log("display:", args);
                                 },
                                 callback: (args) => {
-                                console.log("Callback received:", args);
-                                return "It works! 🎉";
+                                  console.log("Callback received:", args);
+                                  return "It works! 🎉";
                                 }
-                            });
-                            ```
+                              });
+                              ```
                     - `.removeCommand`
                         - Description::
                             - Removes a command with the given `label` from the Block Context Menu
@@ -1272,8 +1401,24 @@
                                 - Label provided when using `.addCommand`
                         - Returns::
                             - null
-
-                - `individualMultiselect`
+                - `.multiselect`
+                    - `.getSelected`
+                        - Description::
+                            - Returns an array of objects representing the currently drag-selected blocks in the main window
+                        - Parameters::
+                            - none
+                        - return example::
+                            - ```javascript
+                              // Returns an array of selected blocks with their uid and window-id
+                              [
+                                { "block-uid": "Vfht187T1", "window-id": "main-window" },
+                                { "block-uid": "abc123xyz", "window-id": "main-window" }
+                              ]
+                              
+                              // Empty array if no blocks are selected
+                              []
+                              ```
+                - `.individualMultiselect`
                     - `getSelectedUids`
                         - Description::
                             - Gets the uids currently selected by individual multiselect (usually triggered by `cmd-m`)
@@ -1311,7 +1456,7 @@
                                 - Function called with `block-context` when the user selects the command in block context menu. 
                         - Returns::
                             - Promise which resolves once operation has completed
-                                - More details [here](((CMKX2Zpwl)))
+                                - More details [here](Write functions in roamAlphaAPI now utilize promises.)
                         - Usage::
                             - ```javascript
                               roamAlphaAPI.ui.blockContextMenu.addCommand(
@@ -1381,23 +1526,23 @@
                                 - Function called with `ref-context` which should return true if the command should be shown or false if not.
                                     - `ref-context`
                                         - ```javascript
-                                        {
+                                          {
                                             page-uid: "YnatnbZzF",
                                             page-title: "title"
-                                        }
-                                        ```
+                                          }
+                                          ```
                             - `callback`: __function__
                                 - Function called with `ref-context` when the user selects the command in block context menu. 
                         - Returns::
                             - null
                         - Usage::
                             - ```javascript
-                            roamAlphaAPI.ui.pageLinkContextMenu.addCommand(
+                              roamAlphaAPI.ui.pageLinkContextMenu.addCommand(
                                 {label: "Debug: Console Log",  
-                                callback: (e)=>console.log(e)
+                                 callback: (e)=>console.log(e)
                                 }
-                            )
-                            ```
+                              )
+                              ```
                     - `.removeCommand`
                         - Description::
                             - Removes a command with the given `label` from the Block Context Menu
@@ -1412,9 +1557,7 @@
                             - See `.blockContextMenu` description, this is identical but for the page ref context menu when right clicking on a page reference.
                         - Parameters::
                             - `label`: __string__
-                                - Text displayed in the Command Palette
-                                    - Should preferably include a plugin prefix to ensure global uniqueness if user has more than one plugin installed
-                                        - for example `"RoamRS: Start review session"`
+                                - Text displayed in the context menu
                             - `display-conditional`: __function__, optional
                                 - Function called with `ref-context` which should return true if the command should be shown or false if not.
                                     - `ref-context`
@@ -1423,8 +1566,16 @@
                                             ref-uid: "YnatnbZzF"
                                             block-uid: "xyz" // containing block uid
                                             window-id: "BBG4fFwolaVlT5FZQdzAI7P40aB3-body-outline-04-15-2021"
+                                            indexes: [0 9] //outer indexes
+                                            type: "attribute"
                                           }
                                           ```
+                                    - `type`
+                                        - "page-ref": `[[test]]`
+                                        - "attribute": `test::`
+                                        - "tag": `#test`
+                                        - "multitag": `#[[Test]]`
+                                        - "inline-link": `[t]([[Test]])`
                             - `callback`: __function__
                                 - Function called with `ref-context` when the user selects the command in block context menu. 
                         - Returns::
@@ -1462,6 +1613,7 @@
                                             ref-uid: "YnatnbZzF"
                                             block-uid: "YnatnbZzF" // containing block uid
                                             window-id: "BBG4fFwolaVlT5FZQdzAI7P40aB3-body-outline-04-15-2021"
+                                            indexes: [0 9] //outer indexes
                                           }
                                           ```
                             - `callback`: __function__
@@ -1549,7 +1701,7 @@
                                 - __string__: "page" | "all-pages"
                         - Returns::
                             - Promise which resolves once operation has completed
-                                - More details [here](((CMKX2Zpwl)))
+                                - More details [here](Write functions in roamAlphaAPI now utilize promises.)
                     - `removeCallback`
                         - Description::
                             - Removes a callback with the given `label`
@@ -1559,7 +1711,7 @@
                                 - __string__
                         - Returns::
                             - Promise which resolves once operation has completed
-                                - More details [here](((CMKX2Zpwl)))
+                                - More details [here](Write functions in roamAlphaAPI now utilize promises.)
                     - {{[[TODO]]}} document `wholeGraph`
                         - New API for the new graph overview - old addCallback will not work with new graph overview
                         - examples
@@ -1608,7 +1760,7 @@
                                 - block uid __String__
                         - Returns::
                             - Promise which resolves once operation has completed
-                                - More details [here](((CMKX2Zpwl)))
+                                - More details [here](Write functions in roamAlphaAPI now utilize promises.)
                         - Example::
                             - ```javascript
                               const newNode = document.createElement('div');
@@ -1713,7 +1865,7 @@
                                 - __DOM Node__
                         - Returns:: [[Roam Alpha API]]
                             - Promise which resolves once operation has completed
-                                - More details [here](((CMKX2Zpwl)))
+                                - More details [here](Write functions in roamAlphaAPI now utilize promises.)
                         - Example:: (shows up in right sidebar)
                             - ```javascript
                               const newNode = document.createElement('div');
@@ -1734,11 +1886,136 @@
                             - Unmounts a React component from a certain DOM node.
                         - Returns::
                             - Promise which resolves once operation has completed
-                                - More details [here](((CMKX2Zpwl)))
+                                - More details [here](Write functions in roamAlphaAPI now utilize promises.)
                         - Parameters::
                             - `el`
                                 - DOM node where React component was mounted
                                 - __DOM Node__
+                - `.react`
+                    - `Block`
+                        - Description::
+                            - A React component that renders a given block with children (editable). Can be used declaratively in JSX.
+                        - Props::
+                            - `uid`
+                                - Block UID of block to display
+                                - __String__ (required)
+                            - `open` **optional**
+                                - Optional boolean
+                                - values
+                                    - If not passed = whatever the normal open state of that block is in the db/graph
+                                    - `true` = force open the block (show the children if exist)
+                                    - `false` = force close the block (even if the block has children, they are not shown)
+                            - `zoomPath` **optional**
+                                - Optional boolean
+                                - when `zoomPath` is true, it shows the zoom path i.e. view which looks similar to how linked refs look
+                            - `zoomStartAfterUid` **optional**
+                                - Optional string
+                                - only valid when `zoomPath` is true
+                                    - path compacts to clickable `...` for everything until passed in uid
+                                - block uid __String__
+                            - Example::
+                                - ```javascript
+                                  const { Block } = window.roamAlphaAPI.ui.react;
+                                  
+                                  // Basic usage
+                                  <Block uid="6-P4ZEbIY" />
+                                  
+                                  // Force closed
+                                  <Block uid="6-P4ZEbIY" open={false} />
+                                  
+                                  // With zoom path
+                                  <Block
+                                    uid="6-P4ZEbIY"
+                                    zoomPath={true}
+                                    zoomStartAfterUid="ImSvJvm1_"
+                                  />
+                                  ```
+                    - `Page`
+                        - Description::
+                            - A React component that renders a given page. Can be used declaratively in JSX.
+                        - Props::
+                            - `uid` **optional**
+                                - Page UID to display
+                                - __String__ (either `uid` or `title` is required)
+                            - `title` **optional**
+                                - Page title (alternative to UID)
+                                - __String__ (either `uid` or `title` is required)
+                            - `hideMentions` **optional**
+                                - Optional boolean
+                                - When `true`, hides the linked references section at the bottom of the page
+                        - Example::
+                            - ```javascript
+                              const { Page } = window.roamAlphaAPI.ui.react;
+                              
+                              // By UID
+                              <Page uid="page-uid-123" />
+                              
+                              // By title
+                              <Page title="My Page" />
+                              
+                              // Hide mentions
+                              <Page uid="page-uid-123" hideMentions={true} />
+                              ```
+                    - `Search`
+                        - Description::
+                            - A React component that renders search results for a given query string. Can be used declaratively in JSX.
+                        - Props::
+                            - `searchQueryStr`
+                                - The search query string
+                                - __String__ (required)
+                            - `closed` **optional**
+                                - Optional boolean
+                                - When `true`, the view is collapsed
+                            - `groupByPage` **optional**
+                                - Optional boolean
+                                - When `true`, groups search results by their parent page
+                            - `hidePaths` **optional**
+                                - Optional boolean
+                                - When `true`, hides the block paths in results
+                            - `onConfigChange` **optional**
+                                - Optional callback function
+                                - Called when the user changes the search configuration (grouping, etc.)
+                                - Receives the new config object as an argument
+                        - Example::
+                            - ```javascript
+                              const { Search } = window.roamAlphaAPI.ui.react;
+                              
+                              // Basic search
+                              <Search searchQueryStr="Bret Victor" />
+                              
+                              // Grouped by page with callback
+                              <Search
+                                searchQueryStr="Bret Victor"
+                                groupByPage={true}
+                                onConfigChange={(config) => console.log('Config changed:', config)}
+                              />
+                              
+                              // Hide paths
+                              <Search
+                                searchQueryStr="TODO"
+                                hidePaths={true}
+                              />
+                              ```
+                    - `BlockString`
+                        - Description::
+                            - A React component that renders a Roam-markdown string. This includes rendering `[[page links]]`, `((block refs))`, and other Roam formatting. The rendered content is **not** editable.
+                        - Props::
+                            - `string`
+                                - The Roam-markdown string to render
+                                - __String__ (required)
+                        - Example::
+                            - ```javascript
+                              const { String } = window.roamAlphaAPI.ui.react;
+                              
+                              // Render text with page link
+                              <String string="Hello [[World]]" />
+                              
+                              // Render text with block reference
+                              <String string="See also: ((abc123def))" />
+                              
+                              // Render formatted text
+                              <String string="This is **bold** and __italic__" />
+                              ```
             - `.util`
                 - `.generateUID`
                     - Description::
